@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 from flask import Flask, make_response, redirect, render_template, request
 from flask_socketio import SocketIO, emit, close_room, disconnect
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_babel import Babel
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 
@@ -16,6 +17,8 @@ app = Flask(__name__)
 SAML_CONFIG_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 # async_mode=None leaves it to the application to choose the best option based on installed packages.
 socketio = SocketIO(app, async_mode=None)
+#socketio = SocketIO(app, async_mode=None,cors_allowed_origins="*")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 babel = Babel(app)
 
